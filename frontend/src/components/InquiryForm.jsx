@@ -3,7 +3,7 @@ import bgImg from '../assets/Image/backgrounds/image 107.png';
 
 const InquiryForm = () => {
   return (
-    <section 
+    <section
         className="relative mt-6 rounded-lg overflow-hidden h-[400px] flex items-center bg-cover bg-no-repeat bg-center"
         style={{ backgroundImage: `url("${bgImg}")` }}
     >

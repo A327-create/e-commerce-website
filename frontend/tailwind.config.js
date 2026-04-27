@@ -13,22 +13,22 @@ export default {
           dark: '#0056b3',
         },
         secondary: {
-          DEFAULT: '#8B96A5', // Gray for text
-          light: '#F7FAFC', // Background
+          DEFAULT: '#8B96A5',
+          light: '#F7FAFC',
         },
         dark: {
-          DEFAULT: '#1C1C1C', // Heading
-          light: '#505050', // Subtle text
+          DEFAULT: '#1C1C1C',
+          light: '#505050',
         },
         orange: {
           DEFAULT: '#FF9017',
         },
         teal: {
-          DEFAULT: '#00B517', // Success or specific accent
+          DEFAULT: '#00B517',
           light: '#E5F1E3',
         },
         aqua: {
-          DEFAULT: '#237C02', // Some aqua/green in design
+          DEFAULT: '#237C02',
           light: '#C3FFCB',
         },
         shade: {

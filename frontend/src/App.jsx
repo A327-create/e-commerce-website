@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { getCurrentUser } from './services/authService';
 import Header from './components/Header';
 import Hero from './components/Hero';
 import Deals from './components/Deals';
@@ -15,94 +16,117 @@ import Cart from './components/Cart';
 import Profile from './components/Profile';
 import Messages from './components/Messages';
 import Orders from './components/Orders';
+import Favorites from './components/Favorites';
+import Login from './components/Login';
+import Register from './components/Register';
+import AdminDashboard from './components/AdminDashboard';
+import HotOffers from './components/HotOffers';
+import NewArrivals from './components/NewArrivals';
+import ComingSoon from './components/ComingSoon';
+import Help from './components/Help';
+import { fetchProducts } from './services/productService';
 
-// Category Banner Images
 import homeBanner from './assets/Image/backgrounds/image 98.png';
 import electronicsBanner from './assets/Image/backgrounds/image 106.png';
 
-// Home and Outdoor Images
-import itemH1 from './assets/Image/interior/1.png';
-import itemH2 from './assets/Image/interior/3.png';
-import itemH3 from './assets/Image/interior/6.png';
-import itemH4 from './assets/Image/interior/7.png';
-import itemH5 from './assets/Image/interior/8.png';
-import itemH6 from './assets/Image/interior/9.png';
-import itemH7 from './assets/Image/interior/image 89.png';
-import itemH8 from './assets/Image/interior/image 93.png';
-
-// Electronics Images
-import itemE1 from './assets/Image/tech/8.png';
-import itemE2 from './assets/Image/tech/image 85.png';
-import itemE3 from './assets/Image/tech/image 32.png';
-import itemE4 from './assets/Image/tech/image 33.png';
-import itemE5 from './assets/Image/tech/image 34.png';
-import itemE6 from './assets/Image/tech/image 23.png';
-import itemE7 from './assets/Image/tech/image 86.png';
-import itemE8 from './assets/Image/tech/6.png';
-
 function App() {
   const [currentPage, setCurrentPage] = useState('home');
+  const [selectedProductId, setSelectedProductId] = useState(null);
+  const [user, setUser] = useState(null);
+  const [homeProducts, setHomeProducts] = useState([]);
+  const [electronicsProducts, setElectronicsProducts] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
 
-  const homeAndOutdoorItems = [
-    { name: "Soft chairs", price: "19", image: itemH1 },
-    { name: "Sofa & chair", price: "19", image: itemH2 },
-    { name: "Kitchen dishes", price: "19", image: itemH3 },
-    { name: "Smart watches", price: "19", image: itemH4 },
-    { name: "Kitchen mixer", price: "100", image: itemH5 },
-    { name: "Blenders", price: "39", image: itemH6 },
-    { name: "Home appliance", price: "19", image: itemH7 },
-    { name: "Coffee maker", price: "10", image: itemH8 },
-  ];
+  useEffect(() => {
+    const token = localStorage.getItem('access_token');
+    if (token) {
+      getCurrentUser()
+        .then(data => setUser(data))
+        .catch(() => localStorage.removeItem('access_token'));
+    }
+  }, []);
 
-  const electronicsItems = [
-    { name: "Smart watches", price: "19", image: itemE1 },
-    { name: "Cameras", price: "89", image: itemE2 },
-    { name: "Headphones", price: "10", image: itemE3 },
-    { name: "Smartphones", price: "19", image: itemE4 },
-    { name: "Gaming set", price: "35", image: itemE5 },
-    { name: "Laptop & PC", price: "340", image: itemE6 },
-    { name: "Smartphones", price: "19", image: itemE7 },
-    { name: "Electric kettle", price: "240", image: itemE8 },
-  ];
+  useEffect(() => {
+    fetchProducts().then(data => {
+      const uniqueCategories = [...new Set(data.map(p => p.category))];
+      const cat1 = uniqueCategories[0] || '';
+      const cat2 = uniqueCategories[1] || '';
+      setHomeProducts(data.filter(p => p.category === cat1).slice(0, 8));
+      setElectronicsProducts(data.filter(p => p.category === cat2).slice(0, 8));
+    }).catch(console.error);
+  }, []);
 
   const renderContent = () => {
     switch (currentPage) {
       case 'listing':
-        return <ProductListing setPage={setCurrentPage} />;
+        return (
+          <ProductListing
+            setPage={setCurrentPage}
+            setSelectedProductId={setSelectedProductId}
+            initialSearch={searchQuery}
+          />
+        );
       case 'details':
-        return <ProductDetails setPage={setCurrentPage} />;
+        return (
+          <ProductDetails
+            setPage={setCurrentPage}
+            productId={selectedProductId}
+            setSelectedProductId={setSelectedProductId}
+            user={user}
+          />
+        );
       case 'cart':
         return <Cart setPage={setCurrentPage} />;
       case 'profile':
-        return <Profile setPage={setCurrentPage} />;
+        return <Profile setPage={setCurrentPage} user={user} setUser={setUser} />;
+      case 'admin':
+        return <AdminDashboard setPage={setCurrentPage} user={user} />;
       case 'message':
-        return <Messages setPage={setCurrentPage} />;
+        return <Messages setPage={setCurrentPage} user={user} />;
+      case 'favorites':
+        return <Favorites setPage={setCurrentPage} setSelectedProductId={setSelectedProductId} />;
       case 'orders':
         return <Orders setPage={setCurrentPage} />;
+      case 'login':
+        return <Login setPage={setCurrentPage} setUser={setUser} />;
+      case 'register':
+        return <Register setPage={setCurrentPage} setUser={setUser} />;
+
+      // ✅ Nayi pages
+      case 'hot-offers':
+        return <HotOffers setPage={setCurrentPage} setSelectedProductId={setSelectedProductId} />;
+      case 'new-arrivals':
+        return <NewArrivals setPage={setCurrentPage} setSelectedProductId={setSelectedProductId} />;
+      case 'gift-boxes':
+        return <ComingSoon setPage={setCurrentPage} title="Gift Boxes" />;
+      case 'projects':
+        return <ComingSoon setPage={setCurrentPage} title="Projects" />;
+      case 'help':
+        return <Help setPage={setCurrentPage} />;
+
       default:
         return (
           <div className="container">
-            <Hero />
-            <Deals />
-
+            <Hero setPage={setCurrentPage} user={user} setSelectedProductId={setSelectedProductId} />
+            <Deals setPage={setCurrentPage} setSelectedProductId={setSelectedProductId} />
             <CategorySection
               title="Home and outdoor"
               bannerBg="#FFE6BF"
               bannerImg={homeBanner}
-              items={homeAndOutdoorItems}
+              items={homeProducts}
               setPage={setCurrentPage}
+              setSelectedProductId={setSelectedProductId}
             />
-
             <CategorySection
               title="Consumer electronics"
               bannerBg="#E5F1FF"
               bannerImg={electronicsBanner}
-              items={electronicsItems}
+              items={electronicsProducts}
               setPage={setCurrentPage}
+              setSelectedProductId={setSelectedProductId}
             />
-
             <InquiryForm />
-            <RecommendedItems setPage={setCurrentPage} />
+            <RecommendedItems setPage={setCurrentPage} setSelectedProductId={setSelectedProductId} />
             <Services />
             <RegionSuppliers />
           </div>
@@ -112,12 +136,18 @@ function App() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Header setPage={setCurrentPage} />
-
+      <Header
+        setPage={setCurrentPage}
+        user={user}
+        setUser={setUser}
+        onSearch={(q) => {
+          setSearchQuery(q);
+          setCurrentPage('listing');
+        }}
+      />
       <main className="flex-grow pb-12">
         {renderContent()}
       </main>
-
       <Newsletter />
       <Footer />
     </div>
@@ -125,4 +155,3 @@ function App() {
 }
 
 export default App;
-

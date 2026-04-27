@@ -21,3 +21,13 @@
     @apply bg-white border border-shade-border rounded-md overflow-hidden;
   }
 }
+
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
