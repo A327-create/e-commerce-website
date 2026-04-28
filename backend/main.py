@@ -40,7 +40,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:5173",
-        "https://frontend-tau-ten-50.vercel.app",  
+        "https://shop-api-velmora.vercel.app",  
     ],
     allow_credentials=True,
     allow_methods=["*"],
