@@ -8,7 +8,6 @@ class Settings(BaseSettings):
 
     APP_NAME: str = "ECommerce API"
     DEBUG: bool = False
-
     SECRET_KEY: str
     ALGORITHM: str
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
