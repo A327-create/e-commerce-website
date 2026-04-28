@@ -38,7 +38,10 @@ app.include_router(favorite_routes.router, prefix="/api/v1")
 app.include_router(message_routes.router, prefix="/api/v1")
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[
+        "http://localhost:5173",
+        # "https://your-frontend.vercel.app"  
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
